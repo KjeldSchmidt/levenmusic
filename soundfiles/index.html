@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		'use strict';
+		function cartesianProduct() {
+			// As arguments, use the arrays that should be crossed.
+			var r = [];
+			var arrays = arguments;
+			var max = arrays.length - 1;
+
+			function helper( arr, i ) {
+				for ( var j = 0, l = arrays[i].length; j < l; j++ ) {
+					var a = arr.slice( 0 ); // clone arr
+					a.push( arrays[i][j] );
+					if ( i==max )
+						r.push( a );
+					else
+						helper( a, i+1 );
+				}
+			}
+
+			helper( [], 0 );
+			return r;
+		}
+
+
+
+
+
+
+		var notes = [ 'a', 'as', 'b', 'c', 'cs', 'd', 'ds', 'e', 'f', 'fs', 'g', 'gs' ];
+		var pitches = [ 0, 1, 2, 3, 4, 5, 6, 7 ];
+
+		var tones = cartesianProduct( pitches, notes )
+						.map( function( value ) {
+							return value.join('');
+						});
+
+		for ( var tone in tones ) {
+			var button = document.createElement( 'button' );
+			var text = document.createTextNode( tones[ tone ] );
+			button.appendChild( text );
+			button.onclick = bindTone( tones[ tone ] );
+			document.body.appendChild( button );
+		}
+
+		var melody = [ 
+			{ tone: '4e', duration: 2 },
+			{ tone: '4e', duration: 1 },
+			{ tone: '4g', duration: 1 },
+			{ tone: '4e', duration: 1 },
+			{ tone: '4d', duration: 1 },
+			{ tone: '4c', duration: 2 },
+			{ tone: '4b', duration: 1 },
+		];
+
+		playMelody( melody, 100 );
+
+		function playMelody( melody, tempo ) {
+			var tone = melody.shift();
+			playTone( tone.tone );
+			if ( melody.length ) {
+				window.setTimeout( 
+					function() {
+						playMelody( melody, tempo );
+					},
+					( ( 1000 / (tempo/60) ) * tone.duration )
+				);
+			}
+		}
+
+		function playTone( tone ) {
+			new Audio( tone + '.mp3').play();
+/*			var playTone.tones = {} || playTone.tones;
+			if ( playTone.tones[ tone ] ) {
+				playTone.tones[ tone ].play();
+			} else {
+				playTone.tones[ tone ] = new Audio( tone + '.mp3');
+				playTone.tones[ tone ].play();
+			} */
+		}
+
+		function bindTone( tone ) {
+			return function() {
+				playTone( tone );
+			};
+		}
+
+	</script>
+</body>
+</html>
